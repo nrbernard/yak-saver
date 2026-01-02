@@ -3,11 +3,12 @@ package main
 import (
 	"database/sql"
 	"log"
-	"net/http"
 
 	"github.com/labstack/echo/v4"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/nrbernard/yak-saver/data"
+	"github.com/nrbernard/yak-saver/internal/database"
+	"github.com/nrbernard/yak-saver/internal/handler"
+	"github.com/nrbernard/yak-saver/internal/service"
 )
 
 func main() {
@@ -24,14 +25,13 @@ func main() {
 	}
 
 	log.Println("Successfully connected to database")
+	dbQueries := database.New(db)
 
-	e.GET("/projects", func(c echo.Context) error {
-		projects := data.GetProjects()
-		response := map[string]interface{}{
-			"projects": projects,
-		}
-		return c.JSON(http.StatusOK, response)
-	})
+	projectService := service.NewProjectService(dbQueries)
+
+	projectHandler := handler.NewProjectHandler(projectService)
+
+	e.GET("/projects", projectHandler.GetProjects)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
