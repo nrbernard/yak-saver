@@ -3,8 +3,8 @@ module github.com/nrbernard/yak-saver
 go 1.25.5
 
 require (
-	github.com/google/uuid v1.6.0
 	github.com/labstack/echo/v4 v4.12.0
+	github.com/mattn/go-sqlite3 v1.14.22
 )
 
 require (
