@@ -14,3 +14,13 @@ type Project struct {
 	CreatedAt sql.NullTime
 	UpdatedAt sql.NullTime
 }
+
+type Task struct {
+	ID           int64
+	ProjectID    int64
+	ParentTaskID sql.NullInt64
+	Content      string
+	Link         sql.NullString
+	CreatedAt    sql.NullTime
+	UpdatedAt    sql.NullTime
+}
