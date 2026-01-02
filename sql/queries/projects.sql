@@ -1,2 +1,2 @@
 -- name: GetProjects :many
-SELECT * FROM projects;
+SELECT id, name, created_at, updated_at FROM projects;
