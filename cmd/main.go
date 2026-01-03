@@ -28,10 +28,15 @@ func main() {
 	dbQueries := database.New(db)
 
 	projectService := service.NewProjectService(dbQueries)
+	taskService := service.NewTaskService(dbQueries)
 
 	projectHandler := handler.NewProjectHandler(projectService)
+	taskHandler := handler.NewTaskHandler(taskService)
 
 	e.GET("/projects", projectHandler.GetProjects)
+	e.PUT("/tasks/:id", taskHandler.UpdateTask)
+	e.POST("/tasks", taskHandler.CreateTask)
+	e.DELETE("/tasks/:id", taskHandler.DeleteTask)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

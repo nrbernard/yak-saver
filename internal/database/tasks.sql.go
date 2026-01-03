@@ -7,7 +7,39 @@ package database
 
 import (
 	"context"
+	"database/sql"
 )
+
+const createTask = `-- name: CreateTask :exec
+INSERT INTO tasks (project_id, parent_task_id, content, link)
+VALUES (?1, ?2, ?3, ?4)
+`
+
+type CreateTaskParams struct {
+	ProjectID    int64
+	ParentTaskID sql.NullInt64
+	Content      string
+	Link         sql.NullString
+}
+
+func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) error {
+	_, err := q.db.ExecContext(ctx, createTask,
+		arg.ProjectID,
+		arg.ParentTaskID,
+		arg.Content,
+		arg.Link,
+	)
+	return err
+}
+
+const deleteTask = `-- name: DeleteTask :exec
+DELETE FROM tasks WHERE id = ?1
+`
+
+func (q *Queries) DeleteTask(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteTask, id)
+	return err
+}
 
 const getTasksOrdered = `-- name: GetTasksOrdered :many
 SELECT id, project_id, parent_task_id, content, link, created_at, updated_at 
@@ -44,4 +76,21 @@ func (q *Queries) GetTasksOrdered(ctx context.Context) ([]Task, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateTask = `-- name: UpdateTask :exec
+UPDATE tasks 
+SET content = ?1, link = ?2, updated_at = CURRENT_TIMESTAMP 
+WHERE id = ?3
+`
+
+type UpdateTaskParams struct {
+	Content string
+	Link    sql.NullString
+	ID      int64
+}
+
+func (q *Queries) UpdateTask(ctx context.Context, arg UpdateTaskParams) error {
+	_, err := q.db.ExecContext(ctx, updateTask, arg.Content, arg.Link, arg.ID)
+	return err
 }
