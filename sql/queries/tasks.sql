@@ -13,5 +13,10 @@ INSERT INTO tasks (project_id, parent_task_id, content, link)
 VALUES (?1, ?2, ?3, ?4)
 RETURNING id, project_id, parent_task_id, content, link, created_at, updated_at;
 
+-- name: GetTasksByParentID :many
+SELECT id, project_id, parent_task_id, content, link, created_at, updated_at
+FROM tasks
+WHERE parent_task_id = ?1;
+
 -- name: DeleteTask :exec
 DELETE FROM tasks WHERE id = ?1;

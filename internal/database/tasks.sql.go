@@ -52,6 +52,43 @@ func (q *Queries) DeleteTask(ctx context.Context, id int64) error {
 	return err
 }
 
+const getTasksByParentID = `-- name: GetTasksByParentID :many
+SELECT id, project_id, parent_task_id, content, link, created_at, updated_at
+FROM tasks
+WHERE parent_task_id = ?1
+`
+
+func (q *Queries) GetTasksByParentID(ctx context.Context, parentTaskID sql.NullInt64) ([]Task, error) {
+	rows, err := q.db.QueryContext(ctx, getTasksByParentID, parentTaskID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Task
+	for rows.Next() {
+		var i Task
+		if err := rows.Scan(
+			&i.ID,
+			&i.ProjectID,
+			&i.ParentTaskID,
+			&i.Content,
+			&i.Link,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getTasksOrdered = `-- name: GetTasksOrdered :many
 SELECT id, project_id, parent_task_id, content, link, created_at, updated_at 
 FROM tasks 
