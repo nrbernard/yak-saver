@@ -58,9 +58,14 @@ func (s *ProjectService) GetProjects(ctx context.Context) ([]map[string]interfac
 			projectTasks[task.ProjectID] = append(projectTasks[task.ProjectID], taskNode)
 		} else {
 			// Child task: add to parent's children
-			parent := taskNodes[task.ParentTaskID.Int64]
-			children := parent["children"].([]map[string]interface{})
-			parent["children"] = append(children, taskNode)
+			parent, exists := taskNodes[task.ParentTaskID.Int64]
+			if !exists {
+				// Parent task not found - treat as top-level task
+				projectTasks[task.ProjectID] = append(projectTasks[task.ProjectID], taskNode)
+			} else {
+				children := parent["children"].([]map[string]interface{})
+				parent["children"] = append(children, taskNode)
+			}
 		}
 	}
 
