@@ -30,7 +30,7 @@ func (h *TaskHandler) UpdateTask(c echo.Context) error {
 
 type CreateTaskRequest struct {
 	ProjectID    int64  `json:"projectId"`
-	ParentTaskID *int64 `json:"parent_task_id,omitempty"`
+	ParentTaskID *int64 `json:"parentTaskId,omitempty"`
 	Content      string `json:"content"`
 	Link         string `json:"link,omitempty"`
 }
