@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/nrbernard/yak-saver/internal/database"
 )
@@ -34,7 +33,7 @@ func (s *ProjectService) GetProjects(ctx context.Context) ([]map[string]interfac
 	// Initialize project structures
 	for _, project := range projects {
 		projectMap[project.ID] = map[string]interface{}{
-			"id":    strconv.FormatInt(project.ID, 10),
+			"id":    project.ID,
 			"name":  project.Name,
 			"tasks": []map[string]interface{}{},
 		}
@@ -44,7 +43,7 @@ func (s *ProjectService) GetProjects(ctx context.Context) ([]map[string]interfac
 	// Build task tree in a single pass (tasks are ordered: top-level first)
 	for _, task := range tasks {
 		taskNode := map[string]interface{}{
-			"id":       strconv.FormatInt(task.ID, 10),
+			"id":       task.ID,
 			"content":  task.Content,
 			"children": []map[string]interface{}{},
 		}

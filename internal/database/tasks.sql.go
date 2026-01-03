@@ -10,9 +10,10 @@ import (
 	"database/sql"
 )
 
-const createTask = `-- name: CreateTask :exec
+const createTask = `-- name: CreateTask :one
 INSERT INTO tasks (project_id, parent_task_id, content, link)
 VALUES (?1, ?2, ?3, ?4)
+RETURNING id, project_id, parent_task_id, content, link, created_at, updated_at
 `
 
 type CreateTaskParams struct {
@@ -22,14 +23,24 @@ type CreateTaskParams struct {
 	Link         sql.NullString
 }
 
-func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) error {
-	_, err := q.db.ExecContext(ctx, createTask,
+func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, error) {
+	row := q.db.QueryRowContext(ctx, createTask,
 		arg.ProjectID,
 		arg.ParentTaskID,
 		arg.Content,
 		arg.Link,
 	)
-	return err
+	var i Task
+	err := row.Scan(
+		&i.ID,
+		&i.ProjectID,
+		&i.ParentTaskID,
+		&i.Content,
+		&i.Link,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const deleteTask = `-- name: DeleteTask :exec

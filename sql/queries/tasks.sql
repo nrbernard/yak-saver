@@ -8,9 +8,10 @@ UPDATE tasks
 SET content = ?1, link = ?2, updated_at = CURRENT_TIMESTAMP 
 WHERE id = ?3;
 
--- name: CreateTask :exec
+-- name: CreateTask :one
 INSERT INTO tasks (project_id, parent_task_id, content, link)
-VALUES (?1, ?2, ?3, ?4);
+VALUES (?1, ?2, ?3, ?4)
+RETURNING id, project_id, parent_task_id, content, link, created_at, updated_at;
 
 -- name: DeleteTask :exec
 DELETE FROM tasks WHERE id = ?1;

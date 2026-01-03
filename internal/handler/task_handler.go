@@ -28,20 +28,39 @@ func (h *TaskHandler) UpdateTask(c echo.Context) error {
 	return h.TaskService.UpdateTask(c.Request().Context(), intID, content, sql.NullString{String: link, Valid: link != ""})
 }
 
+type CreateTaskRequest struct {
+	ProjectID    int64  `json:"projectId"`
+	ParentTaskID *int64 `json:"parent_task_id,omitempty"`
+	Content      string `json:"content"`
+	Link         string `json:"link,omitempty"`
+}
+
 func (h *TaskHandler) CreateTask(c echo.Context) error {
-	projectID := c.FormValue("project_id")
-	parentTaskID := c.FormValue("parent_task_id")
-	content := c.FormValue("content")
-	link := c.FormValue("link")
-	intProjectID, err := strconv.ParseInt(projectID, 10, 64)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid Project ID"})
+	var req CreateTaskRequest
+	if err := c.Bind(&req); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid JSON: " + err.Error()})
 	}
-	intParentTaskID, err := strconv.ParseInt(parentTaskID, 10, 64)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid Parent Task ID"})
+
+	var parentTaskIDNull sql.NullInt64
+	if req.ParentTaskID != nil {
+		parentTaskIDNull = sql.NullInt64{Int64: *req.ParentTaskID, Valid: true}
 	}
-	return h.TaskService.CreateTask(c.Request().Context(), intProjectID, sql.NullInt64{Int64: intParentTaskID, Valid: parentTaskID != ""}, content, sql.NullString{String: link, Valid: link != ""})
+
+	task, err := h.TaskService.CreateTask(c.Request().Context(), req.ProjectID, parentTaskIDNull, req.Content, sql.NullString{String: req.Link, Valid: req.Link != ""})
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to create task: " + err.Error()})
+	}
+
+	taskNode := map[string]interface{}{
+		"id":       task.ID,
+		"content":  task.Content,
+		"children": []map[string]interface{}{},
+	}
+	if task.Link.Valid {
+		taskNode["link"] = task.Link.String
+	}
+
+	return c.JSON(http.StatusCreated, taskNode)
 }
 
 func (h *TaskHandler) DeleteTask(c echo.Context) error {

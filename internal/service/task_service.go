@@ -23,7 +23,7 @@ func (s *TaskService) UpdateTask(ctx context.Context, id int64, content string, 
 	})
 }
 
-func (s *TaskService) CreateTask(ctx context.Context, projectID int64, parentTaskID sql.NullInt64, content string, link sql.NullString) error {
+func (s *TaskService) CreateTask(ctx context.Context, projectID int64, parentTaskID sql.NullInt64, content string, link sql.NullString) (database.Task, error) {
 	return s.Repo.CreateTask(ctx, database.CreateTaskParams{
 		ProjectID:    projectID,
 		ParentTaskID: parentTaskID,
