@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/nrbernard/yak-saver/internal/database"
 	"github.com/nrbernard/yak-saver/internal/handler"
@@ -13,6 +14,12 @@ import (
 
 func main() {
 	e := echo.New()
+
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"http://localhost:5173"},
+		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
+	}))
 
 	db, err := sql.Open("sqlite3", "data/yak-saver.db")
 	if err != nil {
