@@ -79,3 +79,7 @@ func (s *ProjectService) GetProjects(ctx context.Context) ([]map[string]interfac
 
 	return result, nil
 }
+
+func (s *ProjectService) CreateProject(ctx context.Context, name string) (database.Project, error) {
+	return s.Repo.CreateProject(ctx, name)
+}
