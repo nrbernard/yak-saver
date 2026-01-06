@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/nrbernard/yak-saver/internal/service"
@@ -49,4 +50,18 @@ func (h *ProjectHandler) CreateProject(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusCreated, projectResponse)
+}
+
+func (h *ProjectHandler) DeleteProject(c echo.Context) error {
+	id := c.Param("id")
+	intID, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid ID"})
+	}
+
+	if err := h.ProjectService.DeleteProject(c.Request().Context(), intID); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to delete project: " + err.Error()})
+	}
+
+	return c.NoContent(http.StatusNoContent)
 }

@@ -20,3 +20,6 @@ WHERE parent_task_id = ?1;
 
 -- name: DeleteTask :exec
 DELETE FROM tasks WHERE id = ?1;
+
+-- name: DeleteTasksByProjectID :exec
+DELETE FROM tasks WHERE project_id = ?1;

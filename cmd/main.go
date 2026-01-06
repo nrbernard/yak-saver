@@ -42,6 +42,7 @@ func main() {
 
 	e.GET("/projects", projectHandler.GetProjects)
 	e.POST("/projects", projectHandler.CreateProject)
+	e.DELETE("/projects/:id", projectHandler.DeleteProject)
 	e.PUT("/tasks/:id", taskHandler.UpdateTask)
 	e.POST("/tasks", taskHandler.CreateTask)
 	e.DELETE("/tasks/:id", taskHandler.DeleteTask)

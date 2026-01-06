@@ -27,6 +27,15 @@ func (q *Queries) CreateProject(ctx context.Context, name string) (Project, erro
 	return i, err
 }
 
+const deleteProject = `-- name: DeleteProject :exec
+DELETE FROM projects WHERE id = ?1
+`
+
+func (q *Queries) DeleteProject(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteProject, id)
+	return err
+}
+
 const getProjects = `-- name: GetProjects :many
 SELECT id, name, created_at, updated_at FROM projects
 `

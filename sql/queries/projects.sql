@@ -5,3 +5,6 @@ SELECT id, name, created_at, updated_at FROM projects;
 INSERT INTO projects (name)
 VALUES (?1)
 RETURNING id, name, created_at, updated_at;
+
+-- name: DeleteProject :exec
+DELETE FROM projects WHERE id = ?1;

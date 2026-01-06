@@ -83,3 +83,13 @@ func (s *ProjectService) GetProjects(ctx context.Context) ([]map[string]interfac
 func (s *ProjectService) CreateProject(ctx context.Context, name string) (database.Project, error) {
 	return s.Repo.CreateProject(ctx, name)
 }
+
+func (s *ProjectService) DeleteProject(ctx context.Context, id int64) error {
+	// First, delete all tasks for this project (including all child tasks)
+	if err := s.Repo.DeleteTasksByProjectID(ctx, id); err != nil {
+		return err
+	}
+
+	// Then, delete the project itself
+	return s.Repo.DeleteProject(ctx, id)
+}
