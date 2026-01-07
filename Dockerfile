@@ -13,7 +13,7 @@ ENV VITE_API_BASE_URL=
 RUN npm run build
 
 # Stage 2: Build Go backend
-FROM golang:1.23-alpine AS backend-builder
+FROM golang:1.25-alpine AS backend-builder
 WORKDIR /build
 
 # Install build dependencies for CGO (required for SQLite)
@@ -36,12 +36,12 @@ RUN CGO_ENABLED=1 GOOS=linux go build -o main ./cmd
 FROM alpine:latest
 WORKDIR /app
 
-# Install runtime dependencies
-RUN apk add --no-cache sqlite-libs ca-certificates
+# Install runtime dependencies and Go (needed for goose)
+RUN apk add --no-cache sqlite-libs ca-certificates go
 
 # Install goose for database migrations
-RUN wget -O /usr/local/bin/goose https://github.com/pressly/goose/releases/download/v3.18.0/goose_linux_amd64 && \
-    chmod +x /usr/local/bin/goose
+RUN go install github.com/pressly/goose/v3/cmd/goose@latest && \
+    mv /root/go/bin/goose /usr/local/bin/goose
 
 # Copy backend binary
 COPY --from=backend-builder /build/main ./
