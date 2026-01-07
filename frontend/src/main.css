@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+@theme {
+  --color-tangerine: var(--color-burnt-peach-400);
+  --color-banana: var(--color-sunflower-gold-400);
+  --color-strawberry: var(--color-pastel-pink-200);
+
+  --color-pastel-pink-50: #fde8ea;
+  --color-pastel-pink-100: #fbd0d6;
+  --color-pastel-pink-200: #f7a1ad;
+  --color-pastel-pink-300: #f37283;
+  --color-pastel-pink-400: #ef435a;
+  --color-pastel-pink-500: #eb1431;
+  --color-pastel-pink-600: #bc1027;
+  --color-pastel-pink-700: #8d0c1d;
+  --color-pastel-pink-800: #5e0814;
+  --color-pastel-pink-900: #2f040a;
+  --color-pastel-pink-950: #210307;
+
+  --color-sunflower-gold-50: #fff6e6;
+  --color-sunflower-gold-100: #feeecd;
+  --color-sunflower-gold-200: #fddc9b;
+  --color-sunflower-gold-300: #fdcb68;
+  --color-sunflower-gold-400: #fcba36;
+  --color-sunflower-gold-500: #fba904;
+  --color-sunflower-gold-600: #c98703;
+  --color-sunflower-gold-700: #976502;
+  --color-sunflower-gold-800: #644302;
+  --color-sunflower-gold-900: #322201;
+  --color-sunflower-gold-950: #231801;
+
+  --color-burnt-peach-50: #fdede7;
+  --color-burnt-peach-100: #fcdacf;
+  --color-burnt-peach-200: #f9b69f;
+  --color-burnt-peach-300: #f6916f;
+  --color-burnt-peach-400: #f36c3f;
+  --color-burnt-peach-500: #f0470f;
+  --color-burnt-peach-600: #c0390c;
+  --color-burnt-peach-700: #902b09;
+  --color-burnt-peach-800: #601d06;
+  --color-burnt-peach-900: #300e03;
+  --color-burnt-peach-950: #220a02;
+}
+
+:root {
+  color-scheme: light dark;
+  color: var(--color-slate-700);
+  background-color: var(--color-strawberry);
+
+  font-family: system-ui, -apple-system, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-color-scheme: dark) { 
+  :root {
+    color: var(--color-neutral-100);
+    background-color: var(--color-neutral-900);
+  }
+}

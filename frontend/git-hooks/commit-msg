@@ -1,0 +1,48 @@
+#!/bin/sh
+#
+# Conventional Commits validation hook
+# Validates commit messages against the Conventional Commits specification
+# https://www.conventionalcommits.org/en/v1.0.0/
+#
+# To install: cp git-hooks/commit-msg .git/hooks/commit-msg && chmod +x .git/hooks/commit-msg
+#
+
+commit_msg_file="$1"
+commit_msg=$(cat "$commit_msg_file")
+
+# Pattern for conventional commits:
+# <type>[optional scope]: <description>
+# [optional body]
+# [optional footer(s)]
+#
+# Types: feat, fix, or any other type
+# Optional scope in parentheses
+# Optional ! for breaking changes
+# Required colon and space after type/scope
+conventional_commit_pattern='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?(!)?: .+'
+
+# Check if commit message matches conventional commits format
+if ! echo "$commit_msg" | grep -qE "$conventional_commit_pattern"; then
+    echo "❌ Invalid commit message format!" >&2
+    echo "" >&2
+    echo "Your commit message must follow the Conventional Commits specification:" >&2
+    echo "https://www.conventionalcommits.org/en/v1.0.0/" >&2
+    echo "" >&2
+    echo "Format: <type>[optional scope]: <description>" >&2
+    echo "" >&2
+    echo "Examples:" >&2
+    echo "  feat: add new feature" >&2
+    echo "  fix: resolve bug in login" >&2
+    echo "  feat(api): add user endpoint" >&2
+    echo "  fix(auth)!: breaking change to authentication" >&2
+    echo "  docs: update README" >&2
+    echo "" >&2
+    echo "Common types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert" >&2
+    echo "" >&2
+    echo "Your message was:" >&2
+    echo "$commit_msg" >&2
+    exit 1
+fi
+
+exit 0
+

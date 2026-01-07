@@ -8,6 +8,8 @@ RUN npm ci
 
 # Copy frontend source and build
 COPY frontend/ ./
+# Set empty API base URL for production (same origin)
+ENV VITE_API_BASE_URL=
 RUN npm run build
 
 # Stage 2: Build Go backend
