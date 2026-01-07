@@ -4,28 +4,41 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Yak Saver is a Go web application for managing projects and hierarchical tasks. It uses Echo framework for HTTP routing, SQLite for data persistence, sqlc for type-safe SQL queries, and goose for database migrations.
+Yak Saver is a full-stack web application for managing projects and hierarchical tasks. The backend is built with Go using Echo framework, SQLite for data persistence, sqlc for type-safe SQL queries, and goose for database migrations. The frontend is built with React 19, TypeScript, Vite, and TanStack Query for server state management.
 
 ## Development Commands
 
-### Database Management
+### Backend
+
+**Database Management**
 - `make migrate` - Run database migrations using goose
 - `make seed` - Seed the database with initial data
 - `make generate` - Generate Go code from SQL queries using sqlc
 
-### Running the Application
+**Running the Application**
 - `air` - Run the application with hot reload (builds to `./tmp/main`, listens on port 8080)
 - `go build -o ./tmp/main ./cmd` - Build the application manually
 - `./tmp/main` - Run the built binary
 
-The application serves on `http://localhost:8080` with CORS enabled for `http://localhost:5173`.
+The backend serves on `http://localhost:8080` with CORS enabled for `http://localhost:5173`.
 
-### Database Location
-SQLite database is located at `data/yak-saver.db`.
+**Database Location**: SQLite database is located at `data/yak-saver.db`.
+
+### Frontend
+
+**Development**
+- `npm run dev` - Start development server
+- `npm run build` - Build for production (runs TypeScript compiler then Vite build)
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+
+The frontend development server runs on `http://localhost:5173` and connects to the backend API at `http://localhost:8080`.
 
 ## Architecture
 
-### Layered Structure
+### Backend (Go)
+
+**Layered Structure**
 
 The application follows a three-layer architecture:
 
@@ -43,7 +56,7 @@ The application follows a three-layer architecture:
    - Models generated from schema in `sql/schema/*.sql`
    - Never edit generated files directly
 
-### Key Data Model Patterns
+**Key Data Model Patterns**
 
 **Hierarchical Tasks**: Tasks support unlimited nesting via self-referential `parent_task_id` foreign key. The database handles cascading deletes, but `TaskService.DeleteTask()` explicitly implements recursive deletion in application code to ensure proper cleanup.
 
@@ -51,7 +64,7 @@ The application follows a three-layer architecture:
 
 **Project-Task Relationship**: Each task belongs to exactly one project. Deleting a project cascades to delete all associated tasks (both at database and application level).
 
-### Database Workflow
+**Database Workflow**
 
 1. Create migration: Add new `.sql` file in `sql/schema/` using goose format
 2. Define queries: Add SQL queries in `sql/queries/` with sqlc annotations
@@ -59,18 +72,78 @@ The application follows a three-layer architecture:
 4. Run `make generate` to regenerate Go code from queries
 5. Generated types and methods appear in `internal/database/`
 
+### Frontend (React/TypeScript)
+
+**Tech Stack**
+- **Frontend**: React 19 with TypeScript
+- **Build Tool**: Vite with SWC for Fast Refresh
+- **Styling**: Tailwind CSS v4 with custom theme colors
+- **State Management**: TanStack Query (React Query) for server state
+- **Backend**: REST API running on `http://localhost:8080`
+
+**Data Model**:
+- **Projects**: Top-level entities with a name and collection of tasks
+- **Tasks**: Hierarchical tree structure where tasks can have child tasks (recursive)
+- Tasks optionally contain a `link` field for external references
+
+**API Integration**:
+The frontend communicates with the backend REST API via TanStack Query. All mutations automatically invalidate the `["projects"]` query key to refetch data.
+
+**Component Hierarchy**:
+- `App.tsx` - Root component managing projects list and coordinating all CRUD operations
+- `Project.tsx` - Renders individual project with tasks list
+- `TaskItem.tsx` - Recursively renders tasks and their children
+- `Button.tsx` - Shared button component
+
+**Data Flow**:
+- API hooks are defined in `projects.ts` and `tasks.ts`
+- `App.tsx` fetches projects and passes down mutation functions as callbacks
+- Child components trigger mutations which invalidate queries, causing automatic refetch
+
+**Custom Theme**
+
+Tailwind is configured with a custom color palette in `src/main.css`:
+- `tangerine` - Primary orange accent color (burnt-peach-400)
+- `banana` - Secondary yellow accent (sunflower-gold-400)
+- `strawberry` - Light pink accent (pastel-pink-200)
+
+The theme also defines complete color scales for pastel-pink, sunflower-gold, and burnt-peach.
+
+**TypeScript Configuration**
+
+Uses TypeScript project references:
+- `tsconfig.app.json` - Application source code
+- `tsconfig.node.json` - Vite configuration files
+- `tsconfig.json` - Composite configuration
+
+**Linting**
+
+ESLint flat config with:
+- TypeScript ESLint recommended rules
+- React Hooks rules
+- React Refresh plugin for Vite HMR
+- Prettier compatibility
+
 ## API Endpoints
+
+All endpoints are served by the Go backend on `http://localhost:8080`:
 
 - `GET /projects` - Returns all projects with nested task hierarchies
 - `POST /projects` - Create a new project (requires `name` in JSON body)
 - `DELETE /projects/:id` - Delete project and all associated tasks
-- `PATCH /tasks/:id` - Partially update task (JSON body with optional `content`, `link`, `completed` fields)
 - `POST /tasks` - Create a new task (supports `project_id`, `parent_task_id`, `content`, `link`)
+- `PATCH /tasks/:id` - Partially update task (JSON body with optional `content`, `link`, `completed` fields)
 - `DELETE /tasks/:id` - Delete task and all descendant tasks recursively
 
 ## Important Notes
 
+**Backend**:
 - All task operations that involve parent-child relationships must account for the hierarchical structure
 - When adding new SQL queries, follow the existing naming pattern (`-- name: QueryName :returnType`)
 - The application uses `sql.NullString` and `sql.NullInt64` for nullable database fields
 - CORS is configured to allow requests from the frontend on port 5173
+
+**Frontend**:
+- TanStack Query automatically handles cache invalidation after mutations
+- Components should use the API hooks from `projects.ts` and `tasks.ts`
+- Follow the established pattern of passing mutation callbacks down from `App.tsx`
