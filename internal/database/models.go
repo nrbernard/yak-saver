@@ -23,4 +23,5 @@ type Task struct {
 	Link         sql.NullString
 	CreatedAt    sql.NullTime
 	UpdatedAt    sql.NullTime
+	CompletedAt  sql.NullTime
 }

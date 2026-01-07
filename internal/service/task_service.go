@@ -15,11 +15,16 @@ func NewTaskService(db *database.Queries) *TaskService {
 	return &TaskService{Repo: db}
 }
 
-func (s *TaskService) UpdateTask(ctx context.Context, id int64, content string, link sql.NullString) error {
+func (s *TaskService) GetTask(ctx context.Context, id int64) (database.Task, error) {
+	return s.Repo.GetTask(ctx, id)
+}
+
+func (s *TaskService) UpdateTask(ctx context.Context, id int64, content string, link sql.NullString, completedAt sql.NullTime) error {
 	return s.Repo.UpdateTask(ctx, database.UpdateTaskParams{
-		ID:      id,
-		Content: content,
-		Link:    link,
+		ID:          id,
+		Content:     content,
+		Link:        link,
+		CompletedAt: completedAt,
 	})
 }
 

@@ -50,6 +50,9 @@ func (s *ProjectService) GetProjects(ctx context.Context) ([]map[string]interfac
 		if task.Link.Valid {
 			taskNode["link"] = task.Link.String
 		}
+		if task.CompletedAt.Valid {
+			taskNode["completedAt"] = task.CompletedAt.Time
+		}
 
 		taskNodes[task.ID] = taskNode
 

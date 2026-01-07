@@ -13,7 +13,7 @@ import (
 const createTask = `-- name: CreateTask :one
 INSERT INTO tasks (project_id, parent_task_id, content, link)
 VALUES (?1, ?2, ?3, ?4)
-RETURNING id, project_id, parent_task_id, content, link, created_at, updated_at
+RETURNING id, project_id, parent_task_id, content, link, created_at, updated_at, completed_at
 `
 
 type CreateTaskParams struct {
@@ -39,6 +39,7 @@ func (q *Queries) CreateTask(ctx context.Context, arg CreateTaskParams) (Task, e
 		&i.Link,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.CompletedAt,
 	)
 	return i, err
 }
@@ -61,8 +62,30 @@ func (q *Queries) DeleteTasksByProjectID(ctx context.Context, projectID int64) e
 	return err
 }
 
+const getTask = `-- name: GetTask :one
+SELECT id, project_id, parent_task_id, content, link, created_at, updated_at, completed_at
+FROM tasks
+WHERE id = ?1
+`
+
+func (q *Queries) GetTask(ctx context.Context, id int64) (Task, error) {
+	row := q.db.QueryRowContext(ctx, getTask, id)
+	var i Task
+	err := row.Scan(
+		&i.ID,
+		&i.ProjectID,
+		&i.ParentTaskID,
+		&i.Content,
+		&i.Link,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.CompletedAt,
+	)
+	return i, err
+}
+
 const getTasksByParentID = `-- name: GetTasksByParentID :many
-SELECT id, project_id, parent_task_id, content, link, created_at, updated_at
+SELECT id, project_id, parent_task_id, content, link, created_at, updated_at, completed_at
 FROM tasks
 WHERE parent_task_id = ?1
 `
@@ -84,6 +107,7 @@ func (q *Queries) GetTasksByParentID(ctx context.Context, parentTaskID sql.NullI
 			&i.Link,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.CompletedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -99,8 +123,8 @@ func (q *Queries) GetTasksByParentID(ctx context.Context, parentTaskID sql.NullI
 }
 
 const getTasksOrdered = `-- name: GetTasksOrdered :many
-SELECT id, project_id, parent_task_id, content, link, created_at, updated_at 
-FROM tasks 
+SELECT id, project_id, parent_task_id, content, link, created_at, updated_at, completed_at
+FROM tasks
 ORDER BY project_id, CASE WHEN parent_task_id IS NULL THEN 0 ELSE 1 END, id
 `
 
@@ -121,6 +145,7 @@ func (q *Queries) GetTasksOrdered(ctx context.Context) ([]Task, error) {
 			&i.Link,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.CompletedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -136,18 +161,24 @@ func (q *Queries) GetTasksOrdered(ctx context.Context) ([]Task, error) {
 }
 
 const updateTask = `-- name: UpdateTask :exec
-UPDATE tasks 
-SET content = ?1, link = ?2, updated_at = CURRENT_TIMESTAMP 
-WHERE id = ?3
+UPDATE tasks
+SET content = ?1, link = ?2, completed_at = ?3, updated_at = CURRENT_TIMESTAMP
+WHERE id = ?4
 `
 
 type UpdateTaskParams struct {
-	Content string
-	Link    sql.NullString
-	ID      int64
+	Content     string
+	Link        sql.NullString
+	CompletedAt sql.NullTime
+	ID          int64
 }
 
 func (q *Queries) UpdateTask(ctx context.Context, arg UpdateTaskParams) error {
-	_, err := q.db.ExecContext(ctx, updateTask, arg.Content, arg.Link, arg.ID)
+	_, err := q.db.ExecContext(ctx, updateTask,
+		arg.Content,
+		arg.Link,
+		arg.CompletedAt,
+		arg.ID,
+	)
 	return err
 }

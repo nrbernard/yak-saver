@@ -17,7 +17,7 @@ func main() {
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:5173"},
-		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
+		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.PATCH, echo.DELETE},
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
 	}))
 
@@ -43,7 +43,7 @@ func main() {
 	e.GET("/projects", projectHandler.GetProjects)
 	e.POST("/projects", projectHandler.CreateProject)
 	e.DELETE("/projects/:id", projectHandler.DeleteProject)
-	e.PUT("/tasks/:id", taskHandler.UpdateTask)
+	e.PATCH("/tasks/:id", taskHandler.UpdateTask)
 	e.POST("/tasks", taskHandler.CreateTask)
 	e.DELETE("/tasks/:id", taskHandler.DeleteTask)
 
