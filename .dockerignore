@@ -1,0 +1,26 @@
+# Git
+.git
+.gitignore
+.github
+
+# Local development
+tmp/
+data/
+.air.toml
+.env
+.env.*
+
+# Frontend build artifacts
+frontend/node_modules/
+frontend/dist/
+
+# Documentation
+*.md
+README.md
+CLAUDE.md
+
+# Go
+bin/
+
+# Misc
+.DS_Store

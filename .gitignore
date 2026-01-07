@@ -19,5 +19,9 @@ bin/
 tmp/
 data/
 
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
 tailwindcss
 static/css/output.css
