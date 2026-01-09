@@ -65,7 +65,7 @@ export default function App() {
         <h1 className="text-2xl font-bold">Projects</h1>
         <button
           onClick={addProject}
-          className="px-4 py-1 rounded-md hover:cursor-pointer bg-tangerine text-banana hover:text-tangerine hover:bg-banana"
+          className="px-4 py-1 rounded-md hover:cursor-pointer bg-tangerine text-text-primary hover:text-banana"
         >
           Add Project
         </button>

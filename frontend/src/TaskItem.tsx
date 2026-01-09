@@ -12,7 +12,7 @@ export function TaskItem({
   toggleTaskCompletion: (taskId: string, isCompleted: boolean) => void;
 }) {
   return (
-    <li key={task.id} className="text-slate-800">
+    <li key={task.id}>
       <div className="flex items-center justify-between">
         <input
           type="checkbox"
@@ -21,7 +21,7 @@ export function TaskItem({
           className="mr-2 cursor-pointer accent-banana"
         />
 
-        <div className={`flex-1 ${task.completedAt ? 'line-through' : ''}`}>
+        <div className={`flex-1 ${task.completedAt ? "line-through" : ""}`}>
           {task.link ? (
             <a href={task.link} target="_blank" className="flex-1">
               {task.content}

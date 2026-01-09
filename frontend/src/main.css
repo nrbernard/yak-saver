@@ -4,6 +4,7 @@
   --color-tangerine: var(--color-burnt-peach-400);
   --color-banana: var(--color-sunflower-gold-400);
   --color-strawberry: var(--color-pastel-pink-200);
+  --color-text-primary: var(--color-neutral-800);
 
   --color-pastel-pink-50: #fde8ea;
   --color-pastel-pink-100: #fbd0d6;
@@ -44,7 +45,7 @@
 
 :root {
   color-scheme: light dark;
-  color: var(--color-slate-700);
+  color: var(--color-text-primary);
   background-color: var(--color-strawberry);
 
   font-family: system-ui, -apple-system, sans-serif;

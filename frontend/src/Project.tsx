@@ -25,9 +25,7 @@ export function Project({
     <div className="shadow-md rounded-md p-4 mb-4 bg-tangerine dark:bg-slate-600">
       <div className="flex items-start justify-between border-b-2 border-strawberry pb-2 mb-2">
         <div>
-          <h2 className="text-xl font-extrabold mb-1 text-strawberry">
-            {projectName}
-          </h2>
+          <h2 className="text-xl font-extrabold mb-1">{projectName}</h2>
           <span className="block text-sm text-banana">
             {projectTasks.length} tasks
           </span>
