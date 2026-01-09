@@ -11,7 +11,7 @@ primary_region = "lax"
   ENVIRONMENT = "production"
   DATABASE_PATH = "/data/yak-saver.db"
   STATIC_FILES_PATH = "/app/frontend/dist"
-  CORS_ORIGINS = "*"
+  CORS_ORIGINS = ""
 
 [http_service]
   internal_port = 8080
