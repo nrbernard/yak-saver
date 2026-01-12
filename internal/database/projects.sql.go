@@ -37,7 +37,7 @@ func (q *Queries) DeleteProject(ctx context.Context, id int64) error {
 }
 
 const getProjects = `-- name: GetProjects :many
-SELECT id, name, created_at, updated_at FROM projects
+SELECT id, name, created_at, updated_at FROM projects ORDER BY created_at DESC
 `
 
 func (q *Queries) GetProjects(ctx context.Context) ([]Project, error) {
