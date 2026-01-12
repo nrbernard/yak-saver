@@ -4,7 +4,8 @@
   --color-tangerine: var(--color-burnt-peach-400);
   --color-banana: var(--color-sunflower-gold-400);
   --color-strawberry: var(--color-pastel-pink-200);
-  --color-text-primary: var(--color-neutral-800);
+  --color-dark-text: var(--color-neutral-800);
+  --color-light-text: var(--color-neutral-200);
 
   --color-pastel-pink-50: #fde8ea;
   --color-pastel-pink-100: #fbd0d6;
@@ -45,7 +46,7 @@
 
 :root {
   color-scheme: light dark;
-  color: var(--color-text-primary);
+  color: var(--color-light-text);
   background-color: var(--color-strawberry);
 
   font-family: system-ui, -apple-system, sans-serif;
@@ -57,7 +58,7 @@
 
 @media (prefers-color-scheme: dark) { 
   :root {
-    color: var(--color-neutral-100);
+    color: var(--color-neutral-200);
     background-color: var(--color-neutral-900);
   }
 }
